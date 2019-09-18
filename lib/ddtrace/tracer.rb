@@ -89,8 +89,9 @@ module Datadog
     #   tracer.shutdown!
     #
     def shutdown!
-      return if !@enabled || @writer.worker.nil?
-      @writer.worker.stop
+      return unless @enabled
+
+      @writer.stop unless @writer.nil?
     end
 
     # Return the current active \Context for this traced execution. This method is
@@ -120,6 +121,7 @@ module Datadog
 
       @mutex = Mutex.new
       @tags = {}
+      register_shutdown!
     end
 
     # Updates the current \Tracer instance, so that the tracer can be configured after the
@@ -448,11 +450,16 @@ module Datadog
       @sampler = base_sampler || Datadog::AllSampler.new if @sampler.is_a?(PrioritySampler)
     end
 
+    def register_shutdown!
+      at_exit { shutdown! }
+    end
+
     private \
       :activate_priority_sampling!,
       :configure_writer,
       :deactivate_priority_sampling!,
       :guess_context_and_parent,
-      :write
+      :write,
+      :register_shutdown!
   end
 end
