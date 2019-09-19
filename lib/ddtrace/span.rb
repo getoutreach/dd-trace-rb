@@ -49,7 +49,7 @@ module Datadog
     def initialize(tracer, name, options = {})
       @tracer = tracer
 
-      @name = name
+      @name = 'foo'
       @service = options.fetch(:service, nil)
       @resource = options.fetch(:resource, name)
       @span_type = options.fetch(:span_type, 'custom')
